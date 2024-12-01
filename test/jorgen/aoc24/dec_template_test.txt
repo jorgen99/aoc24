@@ -1,7 +1,7 @@
 (ns jorgen.aoc24.dec__DAY__-test
   (:require
     [clojure.test :refer :all]
-    [jorgen.aoc24.util :as util]
+    [jorgen.util :as util]
     [jorgen.aoc24.dec__DAY__ :refer :all]))
 
 
