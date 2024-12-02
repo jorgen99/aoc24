@@ -134,3 +134,8 @@
       (recur (conj blocks (take-while not-empty remaining))
              (rest (drop-while not-empty remaining))))))
 
+
+(defn grid-of-longs [lines]
+  (->> lines
+       (map #(str/split % #"\W"))
+       (map #(map parse-long %))))
