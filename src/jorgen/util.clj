@@ -82,20 +82,28 @@
   (assoc-in grid (reverse pos) value))
 
 
+(def directions [:e :se :s :sw :w :nw :n :nw])
+
+
 (defn take-step
   "Given a direction and a position get the new position.
    Ignoring 'going out of the grid' resulting in -1
   Ex.
-       :n [1 2] => [1 1]
-       :e [3 8] => [4 8]
-       :n [1 0] => [1 -1]
+       :n  [1 2] => [1 1]
+       :e  [3 8] => [4 8]
+       :sw [3 8] => [2 9]
+       :n  [1 0] => [1 -1]
   "
   [[x y] direction]
   (case direction
-    :n [x (dec y)]
-    :e [(inc x) y]
-    :s [x (inc y)]
-    :w [(dec x) y]))
+    :n  [x (dec y)]
+    :e  [(inc x) y]
+    :s  [x (inc y)]
+    :w  [(dec x) y]
+    :ne [(inc x) (dec y)]
+    :se [(inc x) (inc y)]
+    :sw [(dec x) (inc y)]
+    :nw [(dec x) (dec y)]))
 
 
 (defn indicies-of-char

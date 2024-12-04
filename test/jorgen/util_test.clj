@@ -10,5 +10,9 @@
       (is (= [2 2] (take-step current-pos :n)))
       (is (= [2 4] (take-step current-pos :s)))
       (is (= [3 3] (take-step current-pos :e)))
-      (is (= [1 3] (take-step current-pos :w))))))
+      (is (= [1 3] (take-step current-pos :w)))
+      (is (= [3 2] (take-step current-pos :ne)))
+      (is (= [3 4] (take-step current-pos :se)))
+      (is (= [1 4] (take-step current-pos :sw)))
+      (is (= [1 2] (take-step current-pos :nw))))))
 
