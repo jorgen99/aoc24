@@ -43,7 +43,7 @@
 
 (defn parse-ints [line]
   (->> (parse-number-str line)
-       (map parse-int)))
+       (mapv parse-int)))
 
 
 (defn gcd
