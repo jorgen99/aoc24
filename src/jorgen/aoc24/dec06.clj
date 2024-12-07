@@ -1,75 +1,80 @@
 (ns jorgen.aoc24.dec06
   (:require
-    [clojure.string :as str]
     [jorgen.util :as util]))
 
-(def char->direction
-  {\^ :n
-   \> :e
-   \V :s
-   \< :w})
+(def nesw [:n :e :s :w])
+(def eswn [:e :s :w :n])
+(def dir-char [\^ \> \V \<])
+(def clockwise (zipmap nesw eswn))
+(def char->direction (zipmap dir-char nesw))
 
-(def clockwise
-  {:n :e
-   :e :s
-   :s :w
-   :w :n})
 
-(defn leffe [char line]
+(defn direction-and-possible-start-idx [char line]
   [(get char->direction char)
    (first (util/indicies-of-char char line))])
 
 
 (defn dir-and-pos [line-no line]
-  (->> (keys char->direction)
-       (map #(leffe % line))
+  (->> (keys char->direction)                               ; all possible
+       (map #(direction-and-possible-start-idx % line))
        (remove #(nil? (second %)))
        (map (fn [[dir col]] [dir [col line-no]]))
        (first)))
 
 
-(defn walk [starting-pos direction grid]
+(defn find-start-and-direction [lines]
+  (loop [remaining-lines lines
+         line-no 0]
+    (let [[dir pos] (dir-and-pos line-no (first remaining-lines))]
+      (if dir
+        [dir pos]
+        (recur (rest remaining-lines) (inc line-no))))))
+
+
+(defn patrol [starting-pos direction grid]
   (loop [steps []
          dir direction
          current-pos starting-pos
-         visited #{}]
-    (let [_ (prn "-----------------")
-          _ (prn "dir" dir)
-          _ (prn "current-pos" current-pos)
-          _ (prn "steps" steps)
-          char-at-next-step (util/value-in-grid grid (util/take-step current-pos dir))
-          _ (prn "char-at-next-step" char-at-next-step)
-          loop? (contains? visited current-pos)]
+         path-positions (sorted-set)]
+    (let [next-pos (util/take-step current-pos dir)
+          char-at-next-pos (util/value-in-grid grid next-pos)
+          dir-current-pos [dir current-pos]
+          updated-steps (conj steps dir-current-pos)]
       (cond
-        (nil? char-at-next-step) (conj steps [dir current-pos])
-        (= char-at-next-step "#") (recur steps (clockwise dir) current-pos)
-        :else (recur (conj steps [dir current-pos]) dir (util/take-step  current-pos dir))))))
+        (nil? char-at-next-pos) updated-steps
+        (contains? path-positions dir-current-pos) []
+        (= char-at-next-pos "#") (recur steps (clockwise dir) current-pos path-positions)
+        :else (recur updated-steps dir next-pos (conj path-positions dir-current-pos))))))
 
 
-(let [lines (util/file->lines "dec06_sample.txt")
-      grid (util/parse-grid-of-chars lines)
-      [dir pos] (->> lines
-                     (map #(dir-and-pos 6 %))
-                     (remove nil?)
-                     (first))
-      [d p] (loop [remaining-lines lines
-                   line-no 0]
-              (let [[dir pos] (dir-and-pos line-no (first remaining-lines))]
-                (if dir
-                  [dir pos]
-                  (recur (rest remaining-lines) (inc line-no)))))]
-      ;ss (walk p d grid)]
- (->> (walk p d grid)
-      (map second)
-      distinct
-      count))
+(defn positions-in-original-path [start-pos direction grid]
+  (->> (patrol start-pos direction grid)
+       (map second)
+       (distinct)))
 
 
+(defn part1 [lines]
+  (let [grid (util/parse-grid-of-chars lines)
+        [direction start-pos] (find-start-and-direction lines)]
+    (count (positions-in-original-path start-pos direction grid))))
 
+
+(defn part2 [lines]
+  (let [grid (util/parse-grid-of-chars lines)
+        [direction start-pos] (find-start-and-direction lines)]
+    ; Not the prettiest brute force solution, but it works
+    ; - get distinct positions in the original path
+    ; - take the original grid and set a # in one position
+    ; - patrol, [] -> it's a loop
+    (->> (positions-in-original-path start-pos direction grid)
+         (map #(util/set-value-in-grid grid % "#"))
+         (map #(patrol start-pos direction %))
+         (filter empty?)
+         (count))))
 
 
 (comment
-  (time (part1 (util/file->lines "dec06_sample.txt"))))
-;(time (part1 (util/file->lines "dec06_input.txt")))
-;(time (part2 (util/file->lines "dec06_sample.txt")))
-;(time (part2 (util/file->lines "dec06_input.txt"))))
+  (time (part1 (util/file->lines "dec06_sample.txt")))
+  (time (part1 (util/file->lines "dec06_input.txt")))
+  (time (part2 (util/file->lines "dec06_sample.txt")))
+  (time (part2 (util/file->lines "dec06_input.txt"))))
