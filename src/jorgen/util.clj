@@ -1,6 +1,11 @@
 (ns jorgen.util
   (:require [clojure.string :as str]))
 
+(def nesw [:n :e :s :w])
+(def eswn [:e :s :w :n])
+(def clockwise (zipmap nesw eswn))
+(def all-directions [:e :se :s :sw :w :nw :n :ne])
+
 
 (defn file->lines [filename]
   (->> filename
@@ -82,9 +87,6 @@
   (assoc-in grid (reverse pos) value))
 
 
-(def directions [:e :se :s :sw :w :nw :n :nw])
-
-
 (defn take-step
   "Given a direction and a position get the new position.
    Ignoring 'going out of the grid' resulting in -1
@@ -147,3 +149,13 @@
   (->> lines
        (map #(str/split % #"\W"))
        (map #(map parse-long %))))
+
+
+(defn zip [xs ys]
+  (map vector xs ys))
+
+
+(defn coordinates [grid]
+  (for [y (range 0 (count grid))
+        x (range 0 (count (first grid)))]
+    [x y]))

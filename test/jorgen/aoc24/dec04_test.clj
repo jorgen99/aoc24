@@ -5,10 +5,10 @@
     [jorgen.aoc24.dec04 :refer :all]))
 
 
-(deftest testing-
-  (testing "It should "
-    (is (= 1 (part1 (util/file->lines "dec04_sample.txt"))))
-    (is (= 1 (part1 (util/file->lines "dec04_input.txt"))))))
+#_(deftest testing-count-xmas
+    (testing "It should count XMAS in the grid"
+      (is (= 18 (part1 (util/file->lines "dec04_sample.txt"))))
+      (is (= 2560 (part1 (util/file->lines "dec04_input.txt"))))))
 
 
   ;(testing "It should "

@@ -2,11 +2,8 @@
   (:require
     [jorgen.util :as util]))
 
-(def nesw [:n :e :s :w])
-(def eswn [:e :s :w :n])
 (def dir-char [\^ \> \V \<])
-(def clockwise (zipmap nesw eswn))
-(def char->direction (zipmap dir-char nesw))
+(def char->direction (zipmap dir-char util/nesw))
 
 
 (defn direction-and-possible-start-idx [char line]
@@ -43,7 +40,7 @@
       (cond
         (nil? char-at-next-pos) updated-steps
         (contains? path-positions dir-current-pos) []
-        (= char-at-next-pos "#") (recur steps (clockwise dir) current-pos path-positions)
+        (= char-at-next-pos "#") (recur steps (util/clockwise dir) current-pos path-positions)
         :else (recur updated-steps dir next-pos (conj path-positions dir-current-pos))))))
 
 

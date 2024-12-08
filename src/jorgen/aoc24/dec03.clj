@@ -22,17 +22,18 @@
 (defn remove-dont [line]
   (str/replace line (re-find dont-do-pattern line) ""))
 
-(let [lines (util/file->lines "dec03_input.txt")
-      line (str/join lines)
-      parts (str/split line dont-pattern)
-      _ (spit "resources/apa.txt" (first parts))]
-   (count parts))
+
+#_(let [lines (util/file->lines "dec03_input.txt")
+        line (str/join lines)
+        parts (str/split line dont-pattern)
+        _ (spit "resources/apa.txt" (first parts))]
+    (count parts))
 
 
-(let [lines (util/file->lines "dec03_input.txt")
-      line (str/join lines)]
+#_(let [lines (util/file->lines "dec03_input.txt")
+        line (str/join lines)])
 
-  line)
+
 
 
 (let [lines (util/file->lines "dec03_input.txt")]
