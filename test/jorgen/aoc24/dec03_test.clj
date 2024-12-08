@@ -5,12 +5,12 @@
     [jorgen.aoc24.dec03 :refer :all]))
 
 
-#_(deftest testing-
-    (testing "It should "
-      (is (= 1 (part1 (util/file->lines "dec03_sample.txt"))))
-      (is (= 1 (part1 (util/file->lines "dec03_input.txt"))))))
+(deftest testing-
+  (testing "It should "
+    (is (= 161 (part1 (util/file->lines "dec03_sample.txt"))))
+    (is (= 30243322 (part1 (util/file->lines "dec03_input.txt")))))
 
 
-  ;(testing "It should "
-  ;  (is (= 1 (part2 (util/file->lines "dec03_sample.txt"))))
-  ;  (is (= 1 (part2 (util/file->lines "dec03_input.txt"))))))
+  (testing "It should "
+    (is (= 48 (part2 (util/file->lines "dec03_sample2.txt"))))
+    (is (= 84893551 (part2 (util/file->lines "dec03_input.txt"))))))
