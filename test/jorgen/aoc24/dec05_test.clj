@@ -8,12 +8,12 @@
 (deftest testing-print-queue
   (testing "It should sum the middle value of the safe updates"
     (is (= 143 (part1 (util/file->lines "dec05_sample.txt"))))
-    (is (= 4957 (part1 (util/file->lines "dec05_input.txt"))))))
+    (is (= 4957 (part1 (util/file->lines "dec05_input.txt")))))
 
 
-  ;(testing "It should "
-  ;  (is (= 1 (part2 (util/file->lines "dec05_sample.txt"))))
-  ;  (is (= 1 (part2 (util/file->lines "dec05_input.txt"))))))
+  (testing "It should "
+    (is (= 123 (part2 (util/file->lines "dec05_sample.txt"))))
+    (is (= 6938 (part2 (util/file->lines "dec05_input.txt"))))))
 
 ;{47 #{13 61 29 53},
 ; 97 #{75 13 61 29 47 53},

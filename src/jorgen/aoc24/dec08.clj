@@ -30,7 +30,7 @@
   [antennas]
   (reduce (fn [acc idx]
             (let [next-idx (inc idx)]
-              (assoc acc (nth antennas idx)
+              (assoc acc (antennas idx)
                          (concat
                            (take idx antennas)
                            (drop next-idx antennas)))))

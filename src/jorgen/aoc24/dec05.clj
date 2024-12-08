@@ -37,51 +37,47 @@
 
 
 (defn middle-value [xs]
-  (nth xs (/ (count xs) 2)))
+  (let [middle-idx (int (/ (count xs) 2))]
+    (xs middle-idx)))
+
+
+(defn safe-calc [rules updates]
+  (let [safe? (partial safe-with-rules? rules)]
+    (->> updates
+         (filter #(every? true? (safe? %)))
+         (map middle-value))))
 
 
 (defn part1 [lines]
   (let [blocks (util/parse-blocks lines)
         rules (rule-hist (first blocks))
-        safe? (partial safe-with-rules? rules)]
-    (->> (last blocks)
-         (map util/parse-ints)
-         (filter #(every? true? (safe? %)))
-         (map middle-value)
-         (reduce +))))
+        updates (mapv util/parse-ints (last blocks))]
+    (reduce + (safe-calc rules updates))))
 
 
-(defn move-left [idx col]
-  (concat
-    (take (dec idx) col)
-    (conj [] (nth col idx) (nth col (dec idx)))
-    (drop (inc idx) col)))
-
-(let [lines (util/file->lines "dec05_sample.txt")
-      blocks (util/parse-blocks lines)
-      rules (rule-hist (first blocks))
-      safe? (partial safe-with-rules? rules)
-      unsafe (->> (last blocks)
-                  (map util/parse-ints)
-                  (remove #(every? true? (safe? %))))
-      apa [97 13 75 29 47]
-      biff (->> (last blocks)
-                (map util/parse-ints)
-                (map #(safe? %))
-                (remove #(every? true? %)))]
-      ;(move-left 2 apa)])
-  (move-left 2 apa))
+(defn rule-sort [rules updates]
+  (let [comparator (fn [x y]
+                     (cond ((rules x #{}) y) -1
+                           ((rules y #{}) x) 1
+                           :else 0))]
+    (vec (sort comparator updates))))
 
 
-(nth [1 2 3 4] 2)
-;(map middle-value)))
-;(reduce +)))
+(defn part2 [lines]
+   (let [blocks (util/parse-blocks lines)
+         rules (rule-hist (first blocks))
+         safe? (partial safe-with-rules? rules)
+         unsafe (->> (last blocks)
+                     (map util/parse-ints)
+                     (remove #(every? true? (safe? %))))]
+     (->> unsafe
+           (map (partial rule-sort rules))
+           (safe-calc rules)
+           (reduce +))))
 
 
 (comment
   (time (part1 (util/file->lines "dec05_sample.txt")))
-  (time (part1 (util/file->lines "dec05_input.txt"))))
-;(time (part2 (util/file->lines "dec05_sample.txt")))
-;(time (part2 (util/file->lines "dec05_input.txt"))))
-
-
+  (time (part1 (util/file->lines "dec05_input.txt")))
+  (time (part2 (util/file->lines "dec05_sample.txt")))
+  (time (part2 (util/file->lines "dec05_input.txt"))))
