@@ -51,6 +51,11 @@
        (mapv parse-int)))
 
 
+(defn parse-longs [line]
+  (->> (parse-number-str line)
+       (mapv parse-long)))
+
+
 (defn gcd
   "Calculate the greatest common divisor with the Euclidean algoritm.
    https://en.wikipedia.org/wiki/Greatest_common_divisor#Euclidean_algorithm
