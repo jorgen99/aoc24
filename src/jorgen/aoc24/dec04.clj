@@ -4,6 +4,18 @@
     [jorgen.util :as util]))
 
 
+(defn four-steps-in-dir [pos dir]
+  (loop [steps (repeat 3 dir)
+         pos pos
+         positions [pos]]
+    (if (empty? steps)
+      positions
+      (let [next-pos (util/take-step pos (first steps))]
+        (recur (rest steps)
+               next-pos
+               (conj positions next-pos))))))
+
+
 (defn steps-in-dir [pos dirs initial-pos]
   (loop [steps dirs
          pos pos
@@ -16,41 +28,18 @@
                (conj positions next-pos))))))
 
 
-(defn words-from-grid [positions word grid]
-  (let [_ (prn "__________________")
-        _ (prn "positions" positions)
-        _ (prn "word" word)
-        apa (->> positions
-                 (remove #(some neg? (flatten %)))
-                 (map (fn [positions]
-                        (map #(util/value-in-grid grid %) positions)))
-                 (map str/join)
-                 (filter #(= word %)))]
-    apa))
-
-
-(defn count-words [word grid current-pos]
+(defn count-xmas [grid current-pos]
   (->> util/all-directions
-       (map #(steps-in-dir current-pos (repeat (dec (count word)) %) current-pos))
-       #(words-from-grid % word grid)))
-       ;(count)))
+       (map #(four-steps-in-dir current-pos %))
+       (remove #(some neg? (flatten %)))
+       (map (fn [positions]
+              (map #(util/value-in-grid grid %) positions)))
+       (map str/join)
+       (filter #(= "XMAS" %))
+       (count)))
 
 
-(defn part1 [lines]
-  (let [grid (util/parse-grid-of-chars lines)]
-    (loop [positions (util/coordinates grid)
-           no-of-xmas 0]
-      (if (empty? positions)
-        no-of-xmas
-        (let [current-pos (first positions)
-              current-val (util/value-in-grid grid current-pos)]
-          (if (= "X" current-val)
-            (recur (rest positions)
-                   (+ no-of-xmas (count-words "XMAS" grid current-pos)))
-            (recur (rest positions) no-of-xmas)))))))
-
-
-(defn mas-cross? [word grid current-pos]
+(defn cross? [word grid current-pos]
   (->> [[:nw :se :se] [:se :nw :nw] [:ne :sw :sw] [:sw :ne :ne]]
        (map #(steps-in-dir current-pos % nil))
        (remove #(some neg? (flatten %)))
@@ -61,39 +50,32 @@
        (count)
        (= 2)))
 
-(let [lines (util/file->lines "dec04_sample.txt")
-      grid (util/parse-grid-of-chars lines)
-      coords (for [y (range 0 (count lines))
-                   x (range 0 (count (first grid)))]
-               [x y])
-      current-pos [4 1]
-      word "XMAS"]
-  #_(loop [positions coords
+
+(defn solve [lines trigger-char count-fn]
+  (let [grid (util/parse-grid-of-chars lines)
+        coords (util/coordinates grid)]
+    (loop [positions coords
            no-of-xmas 0]
       (if (empty? positions)
         no-of-xmas
         (let [current-pos (first positions)
               current-val (util/value-in-grid grid current-pos)]
-          (if (= "A" current-val)
-            (recur (rest positions)
-                   (+ no-of-xmas (mas-cross? "MAS" grid current-pos)))
-            (recur (rest positions) no-of-xmas)))))
-
-  #_(mas-cross? "MAS" grid [2 1])
+          (if (= trigger-char current-val)
+            (recur (rest positions) (+ no-of-xmas (count-fn grid current-pos)))
+            (recur (rest positions) no-of-xmas)))))))
 
 
-  (->> util/all-directions
-       (map #(steps-in-dir current-pos (repeat (dec (count word)) %) current-pos))
-       (map (fn [positions] (words-from-grid positions word grid))))
-       ;(count)))
+(defn part1 [lines]
+  (solve lines "X" (fn [grid current-pos]
+                     (count-xmas grid current-pos))))
 
-  (words-from-grid (steps-in-dir [4 1] (repeat (dec (count "XMAS")) :w) [4 1])
-                   "XMAS" grid))
+
+(defn part2 [lines]
+  (solve lines "A" (fn [grid current-pos]
+                     (if (cross? "MAS" grid current-pos) 1 0))))
 
 (comment
   (time (part1 (util/file->lines "dec04_sample.txt")))
-  (time (part1 (util/file->lines "dec04_input.txt"))))
-;(time (part2 (util/file->lines "dec04_sample.txt")))
-;(time (part2 (util/file->lines "dec04_input.txt"))))
-
-
+  (time (part1 (util/file->lines "dec04_input.txt")))
+  (time (part2 (util/file->lines "dec04_sample.txt")))
+  (time (part2 (util/file->lines "dec04_input.txt"))))
