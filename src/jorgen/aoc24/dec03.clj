@@ -28,7 +28,9 @@
          (reduce +))))
 
 
-(defn part2 [lines]
+(defn part2
+  "This is not pretty, but I'm behind on the other days soo... :)"
+  [lines]
   (let [line (str/join lines)]
     (loop [result 0
            parts (str/split line dont-pattern 2)]

@@ -25,7 +25,6 @@
                           (map #(mapv util/parse-longs %))
                           (map (fn [[[sum] & nos]]
                                  (cons sum nos))))]
-
     (->> calibrations
          (map (fn [[r numbers]]
                 (let [ops (apply comb/cartesian-product (repeat (dec (count numbers)) ops))]

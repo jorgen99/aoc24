@@ -53,12 +53,6 @@
            buddies))
        amap))
 
-#_(defn opposite [[c1 c2]]
-    (->> (util/zip c1 c2)
-         (map #(apply - %))
-         (map abs)
-         (util/zip c2)
-         (map #(apply + %))))
 
 (defn diff [[x1 y1] [x2 y2]]
   [(- x2 x1) (- y2 y1)])
@@ -128,5 +122,3 @@
   (time (part1 (util/file->lines "dec08_input.txt")))
   (time (part2 (util/file->lines "dec08_sample.txt")))
   (time (part2 (util/file->lines "dec08_input.txt"))))
-
-
