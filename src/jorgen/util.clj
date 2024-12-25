@@ -84,6 +84,12 @@
   (mapv #(mapv str %) lines))
 
 
+(defn parse-grid-of-ints [lines]
+  (->> lines
+       (mapv #(mapv str %))
+       (mapv #(mapv parse-long %))))
+
+
 (defn value-in-grid [grid pos]
   (get-in grid (reverse pos)))
 
@@ -103,14 +109,23 @@
   "
   [[x y] direction]
   (case direction
-    :n  [x (dec y)]
-    :e  [(inc x) y]
-    :s  [x (inc y)]
-    :w  [(dec x) y]
+    :n [x (dec y)]
+    :e [(inc x) y]
+    :s [x (inc y)]
+    :w [(dec x) y]
     :ne [(inc x) (dec y)]
     :se [(inc x) (inc y)]
     :sw [(dec x) (inc y)]
     :nw [(dec x) (dec y)]))
+
+
+(defn orthogonal-neighbors [pos grid]
+  (->> eswn
+       (map #(take-step  pos %))
+       (remove (fn [[x _]] (< x 0)))
+       (remove (fn [[_ y]] (< y 0)))
+       (remove (fn [[x _]] (>= x (count (first grid)))))
+       (remove (fn [[_ y]] (>= y (count grid))))))
 
 
 (defn indicies-of-char
@@ -164,3 +179,14 @@
   (for [y (range 0 (count grid))
         x (range 0 (count (first grid)))]
     [x y]))
+
+
+(defn swap [i j col]
+  (let [vi (nth col i)
+        vj (nth col j)]
+    (assoc col i vj j vi)))
+
+
+(defn halves [s]
+  (let [mid (quot (count s) 2)]
+    [(subs s 0 mid) (subs s mid)]))
